@@ -1,5 +1,5 @@
 """Flask Application for Paws Rescue Center."""
-from flask import Flask, render_template, abort
+from flask import Flask, render_template, abort, request
 app = Flask(__name__)
 
 """Information regarding the Pets in the System."""
@@ -9,6 +9,12 @@ pets = [
             {"id": 3, "name": "Basker", "age": "1 year", "bio": "I love barking. But, I love my friends more."},
             {"id": 4, "name": "Mr. Furrkins", "age": "5 years", "bio": "Probably napping."}, 
         ]
+
+"""Information regarding the Users in the System"""
+users = {
+    "archie.andrews@email.com": "football4life",
+    "veronica.lodge@email.com": "fashiondiva"
+}
 
 @app.route("/")
 def homepage():
@@ -28,6 +34,17 @@ def pet_details(pet_id):
     if pet is None: 
         abort(404, description="No Pet was Found with the given ID")
     return render_template("details.html", pet = pet)
+
+@app.route("/simplelogin", methods=["GET", "POST"])
+def simplelogin():
+    if request.method == "POST":
+        email = request.form["email"]
+        password = request.form["password"]
+        if email in users and users[email] == password:
+            return render_template("simplelogin.html", message="Successfully logged in!")
+        else:
+            return render_template("simplelogin.html", message="Incorrect Email or Password!")
+    return render_template("simplelogin.html")
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=3000)
