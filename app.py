@@ -1,6 +1,7 @@
 """Flask Application for Paws Rescue Center."""
 from flask import Flask, render_template, abort, request
 from forms import LoginForm, SignupForm
+from flask import session, redirect, url_for
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'dfewfew123213rwdsgert34tgfd1234trgf'
@@ -53,19 +54,27 @@ def simplelogin():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        for u_email, u_password in users.items():
-            if u_email == form.email.data and u_password == form.password.data:
-                return render_template("login.html", message="Successfully logged in!")
-        return render_template("login.html", message="Incorrect Email or Password!")
-    elif form.errors:
-        print(form.errors.items())
+        user = next((user for user in users if user["email"] == form.email.data and user["password"] == form.password.data), None)
+        if user is None:
+            return render_template("login.html", form = form, message = "Wrong Credentials. Please Try Again.")
+        else:
+            session['user'] = user
+            return render_template("login.html", message = "Successfully Logged In!")
+
     return render_template("login.html", form=form)
+
+@app.route("/logout", methods=["GET"])
+def logout():
+    if 'user' in session:
+        session.pop("user")
+    return redirect(url_for("homepage", _scheme="http", _external=True))
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     form = SignupForm()
     if form.validate_on_submit():
         new_user = {"id": len(users)+1, "email": form.email.data}
+        session['user'] = new_user
         return render_template("signup.html", message="Succcessfully signed up!")
     return render_template("signup.html", form=form)
 
