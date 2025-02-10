@@ -9,9 +9,6 @@ Sign Up
 {% endblock %}
 
 {% block content %}
-{% if message %}
-    {{ message }}
-{% endif%}
 {% if form %}
 <form action="{{url_for('signup')}}" method="POST" style="padding:5px;">
     <!-- Full Name Field -->
