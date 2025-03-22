@@ -1,2 +1,4 @@
 # flask-tutorial
- Educative.io Flask tutorial
+ Educative.io Flask tutorial example application.
+
+ 
